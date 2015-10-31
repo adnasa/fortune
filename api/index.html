@@ -1,0 +1,405 @@
+<!DOCTYPE html><!--
+
+This page is automatically generated. See:
+https://github.com/fortunejs/fortune/tree/master/website
+
+--><html lang="en"><head><title>API Reference</title><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><link rel="icon" href="../assets/piggu.png"><link rel="stylesheet" href="../assets/index.css"></head><body><header><a href="https://github.com/fortunejs/fortune" id="corner"><span>Fork on</span> GitHub</a> <a href="../"><img src="../assets/piggu.svg" alt="Piggu" class="emblem"></a> <a href="../"><img src="../assets/fortune_type.svg" alt="Fortune.js" class="logo-type"></a><nav><a href="../getting-started/">Getting Started</a><!--
+        --><a href="../api/">API Reference</a><!--
+        --><a href="../plugins/">Plugins</a></nav></header><article><div class="api"><h6>Fortune <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/core.js"><em>core.js</em></a>)</span></h6><h2 id="fortune"><span class="class">class</span> Fortune<!--
+        --><!--
+        --><!--
+      --><a href="#fortune" class="anchor">#</a></h2><p>This is the default export of the <code>fortune</code> module. The Fortune class subclasses the built-in <code>EventEmitter</code> class, and it has a few static properties attached to it that may be useful to access:</p><ul><li><code>Adapter</code>: abstract base class for the Adapter.</li><li><code>adapters</code>: included adapters, defaults to memory adapter. Note that the browser build also includes <code>indexedDB</code> and <code>webStorage</code> adapters.</li><li><code>Serializer</code>: abstract base class for the Serializer.</li><li><code>serializers</code>: included serializers, defaulting to <em>ad hoc</em> HTTP. Server-side only.</li><li><code>net</code>: network protocol helpers, currently HTTP and WebSocket. Server-side only.</li><li><code>errors</code>: custom typed errors, useful for throwing errors in transform functions.</li><li><code>methods</code>: a hash that maps to string constants. Available are: <code>find</code>, <code>create</code>, <code>update</code>, and <code>delete</code>.</li><li><code>change</code>: this is the name for the event that is emitted when a change is done. The callback function receives an object keyed by method names.</li><li><code>Promise</code>: by default, the native Promise implementation is used. If an alternative is desired, simply assign this property with the new Promise class.</li></ul><p>Note: in the browser version, <code>serializers</code> and <code>net</code> are omitted.</p><h2 id="fortune-constructor"><span class="class">new</span> Fortune<!--
+        --><!--
+          -->(<span class="parameter" title="Object">[options]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-constructor" class="anchor">#</a></h2><p>Create a new instance. The options object may be as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// Adapter configuration. Default: `memoryAdapter`</span>
+  adapter: {
+    <span class="hljs-comment">// Must be a class that extends `Fortune.Adapter`, or a function</span>
+    <span class="hljs-comment">// that accepts the Adapter class and returns a subclass. Required.</span>
+    <span class="hljs-class"><span class="hljs-keyword">type</span>: <span class="hljs-title">Adapter</span> </span>=&gt; { ... },
+
+    <span class="hljs-comment">// An options object that is specific to the adapter. Optional.</span>
+    options: { ... }
+  },
+
+  <span class="hljs-comment">// Serializers ordered by priority. Default: ad hoc JSON-over-HTTP.</span>
+  serializers: [{
+    <span class="hljs-comment">// Must be a class that extends `Fortune.Serializer`, or a function</span>
+    <span class="hljs-comment">// that accepts the Serializer class and returns a subclass. Required.</span>
+    <span class="hljs-class"><span class="hljs-keyword">type</span>: <span class="hljs-title">Serializer</span> </span>=&gt; { ... },
+
+    <span class="hljs-comment">// An options object that is specific to the serializer. Optional.</span>
+    options: { ... }
+  }],
+
+  <span class="hljs-comment">// Whether or not to enforce referential integrity. Default: `true` for</span>
+  <span class="hljs-comment">// server, `false` for browser.</span>
+  enforceLinks: <span class="hljs-keyword">true</span>
+}
+</code></pre><h2 id="fortune-connect">Fortune.<span class="key">connect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#fortune-connect" class="anchor">#</a></h2><p>This method should be called when all setup is done. After this method succeeds, record types can not be defined. The resolved value is the instance of Fortune.</p><h2 id="fortune-disconnect">Fortune.<span class="key">disconnect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#fortune-disconnect" class="anchor">#</a></h2><p>Close adapter connection, and reset state. The resolved value is the instance of Fortune.</p><h2 id="fortune-definetype">Fortune.<span class="key">defineType</span><!--
+        --><!--
+          -->(<span class="parameter" title="String. Name of the record type.">name</span>, <span class="parameter" title="Object. A hash of field definition objects.">fields</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-definetype" class="anchor">#</a></h2><p>Define a record type given a name and a set of field definitions. The <code>fields</code> object only serves to enforce data types, and may be extended by the specific <code>Adapter</code> to express more, such as validations, uniqueness, indexing, etc. Here are some example field definitions:</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// A singular value.</span>
+<span class="hljs-label">  name:</span> { <span class="hljs-string">type:</span> String },
+
+  <span class="hljs-comment">// An array containing values of a single type.</span>
+<span class="hljs-label">  luckyNumbers:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span> },
+
+  <span class="hljs-comment">// Creates a to-many link to `animal` record type. If the field `owner`</span>
+  <span class="hljs-comment">// on the `animal` record type is not an array, this is a many-to-one</span>
+  <span class="hljs-comment">// relationship, otherwise it is many-to-many.</span>
+<span class="hljs-label">  pets:</span> { <span class="hljs-string">link:</span> <span class="hljs-string">'animal'</span>, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">inverse:</span> <span class="hljs-string">'owner'</span> },
+
+  <span class="hljs-comment">// The `min` and `max` keys are open to interpretation by the specific</span>
+  <span class="hljs-comment">// adapter or serializer, which may introspect the field definition.</span>
+<span class="hljs-label">  thing:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">min:</span> <span class="hljs-number">0</span>, <span class="hljs-string">max:</span> <span class="hljs-number">100</span> },
+
+  <span class="hljs-comment">// Nested field definitions are invalid. Use `Object` type instead.</span>
+<span class="hljs-label">  nested:</span> { <span class="hljs-string">thing:</span> { ... } } <span class="hljs-comment">// Will throw an error.</span>
+}
+</code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Symbol</code>, which may be used to represent custom types.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">options</span>, <span class="parameter" title="Arbitrary number of any type. At most two additional arguments.">[&hellip;args]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#fortune-request" class="anchor">#</a></h2><p>This is the primary method for initiating a request. The options object must be formatted as follows:</p><pre><code class="lang-js">{
+  // <span class="hljs-type">The</span> <span class="hljs-keyword">method</span> <span class="hljs-keyword">is</span> a either a function <span class="hljs-keyword">or</span> a <span class="hljs-type">Symbol</span>, keyed under
+  // `methods` <span class="hljs-keyword">and</span> may be one <span class="hljs-keyword">of</span> `find`, `create`, `update`,  <span class="hljs-keyword">or</span> `delete`.
+  // <span class="hljs-type">To</span> implement a custom <span class="hljs-keyword">method</span>, pass a function that accepts one
+  // argument, the context. <span class="hljs-type">It</span> may <span class="hljs-keyword">return</span> the context synchronously <span class="hljs-keyword">or</span> <span class="hljs-keyword">as</span>
+  // a <span class="hljs-type">Promise</span>. <span class="hljs-type">Default</span>: `methods.find`.
+  <span class="hljs-keyword">method</span>: methods.find,
+
+  <span class="hljs-keyword">type</span>: undefined, // <span class="hljs-type">Name</span> <span class="hljs-keyword">of</span> a <span class="hljs-keyword">type</span>. <span class="hljs-type">Optional</span>.
+  ids: undefined, // <span class="hljs-type">An</span> <span class="hljs-type">array</span> <span class="hljs-keyword">of</span> <span class="hljs-type">IDs</span>. <span class="hljs-type">Optional</span>.
+
+  // A <span class="hljs-number">2</span>-dimensional <span class="hljs-type">array</span> specifying links to <span class="hljs-keyword">include</span>. <span class="hljs-type">The</span> first
+  // dimension <span class="hljs-keyword">is</span> a list, the second dimension <span class="hljs-keyword">is</span> depth. <span class="hljs-type">For</span> example:
+  // [['comments'], ['comments', 'author']]
+  <span class="hljs-keyword">include</span>: [],
+
+  // <span class="hljs-type">Exactly</span> the same <span class="hljs-keyword">as</span> the adapter's `find` <span class="hljs-keyword">method</span> options. <span class="hljs-type">The</span> options
+  // apply only to the primary <span class="hljs-keyword">type</span> on `find` requests.
+  options: { ... },
+
+  // <span class="hljs-type">Same</span> <span class="hljs-keyword">as</span> `options`, but <span class="hljs-keyword">is</span> an <span class="hljs-keyword">object</span> keyed by <span class="hljs-keyword">type</span>. <span class="hljs-type">This</span> <span class="hljs-keyword">is</span> only
+  // used <span class="hljs-keyword">in</span> conjunction <span class="hljs-keyword">with</span> the `<span class="hljs-keyword">include</span>` option.
+  includeOptions: { [<span class="hljs-keyword">type</span>]: { ... } },
+
+  // <span class="hljs-type">The</span> <span class="hljs-type">ID</span> <span class="hljs-keyword">of</span> the serializer to use <span class="hljs-keyword">for</span> the input (request). <span class="hljs-type">Optional</span>.
+  serializerInput: undefined,
+
+  // <span class="hljs-type">The</span> <span class="hljs-type">ID</span> <span class="hljs-keyword">of</span> the serializer to use <span class="hljs-keyword">for</span> the output (response). <span class="hljs-type">Optional</span>.
+  serializerOutput: undefined,
+
+  meta: { ... }, // <span class="hljs-type">Meta</span>-info <span class="hljs-keyword">of</span> the request.
+  payload: undefined // <span class="hljs-type">Payload</span> <span class="hljs-keyword">of</span> the request.
+}
+</code></pre><p>The response object looks much simpler:</p><pre><code class="lang-js">{
+  <span class="hljs-tag">meta</span>: { ... }, <span class="hljs-comment">// Meta-info of the response.</span>
+  <span class="hljs-attribute">payload</span>: undefined <span class="hljs-comment">// Payload of the response.</span>
+}
+</code></pre><p>The resolved response object should always be typed.</p><h2 id="fortune-transform">Fortune.<span class="key">transform</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">[input]</span>, <span class="parameter" title="Function">[output]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-transform" class="anchor">#</a></h2><p>Define a transformation per record type.</p><p>A transform function takes at least two arguments, the internal <code>context</code> object and a single <code>record</code>. A special case is the <code>update</code> argument for the <code>update</code> method.</p><p>There are two kinds of transforms, before a record is written to transform input, and after it is read to transform output, both are optional. If an error occurs within an transform function, it will be forwarded to the response. Use typed errors to provide the appropriate feedback. It is varant to note that <code>output</code> transforms are run every time a record is shown in a response, so it should be idempotent.</p><p>For a create request, the input transform must return the second argument <code>record</code> either synchronously, or asynchronously as a Promise. The return value of a delete request is inconsequential, but it may return a value or a Promise. There is a special case of the <code>update</code> method accepting a <code>update</code> object as a third parameter, which must be returned synchronously or as a Promise.</p><p>An example transform to apply a timestamp on a record before creation, and displaying the timestamp in the server&#39;s locale:</p><pre><code class="lang-js"><span class="hljs-keyword">const</span> { methods: {
+  create: createMethod, update: updateMethod
+} } = fortune
+
+store.transform((context, record, update) =&gt; {
+  <span class="hljs-keyword">const</span> { request: { <span class="hljs-keyword">method</span> } } = context
+
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === createMethod) {
+    record.timestamp = new <span class="hljs-type">Date</span>()
+    <span class="hljs-keyword">return</span> record
+  }
+
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === updateMethod) <span class="hljs-keyword">return</span> update
+
+  // <span class="hljs-type">If</span> we get here, <span class="hljs-keyword">return</span> value <span class="hljs-keyword">of</span> the delete <span class="hljs-keyword">method</span> doesn't matter.
+  <span class="hljs-keyword">return</span> null
+}, (context, record) =&gt; {
+  record.timestamp = record.timestamp.toLocaleString()
+  <span class="hljs-keyword">return</span> record
+})
+</code></pre><p>Requests to update a record will have the updates already applied to the record.</p><h2 id="fortune-transforminput">Fortune.<span class="key">transformInput</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">fn</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-transforminput" class="anchor">#</a></h2><p>Convenience method to define only the <code>input</code> argument of a transform.</p><h2 id="fortune-transformoutput">Fortune.<span class="key">transformOutput</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">fn</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-transformoutput" class="anchor">#</a></h2><p>Convenience method to define only the <code>output</code> argument of a transform.</p><h2 id="fortune-create"><span class="class">static</span> Fortune.<span class="key">create</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">[options]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Fortune</span><!--
+        --><!--
+      --><a href="#fortune-create" class="anchor">#</a></h2><p>This is a static method on the Fortune class that is an alternative to the constructor method, for people who hate the <code>new</code> keyword with a passion. This is exactly the same as invoking <code>new Fortune(options)</code>.</p><hr><h6>Adapter <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/adapter&#x2F;index.js"><em>adapter&#x2F;index.js</em></a>)</span></h6><h2 id="adapter"><span class="class">class</span> Adapter<!--
+        --><!--
+        --><!--
+      --><a href="#adapter" class="anchor">#</a></h2><p>Adapter is an abstract base class containing methods to be implemented. All records returned by the adapter must have the primary key <code>id</code>. The primary key <strong>MUST</strong> be a string or a number.</p><h2 id="adapter-constructor"><span class="class">new</span> Adapter<!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+      --><a href="#adapter-constructor" class="anchor">#</a></h2><p>The Adapter should not be instantiated directly, since the constructor function accepts dependencies. The keys which are injected are:</p><ul><li><code>methods</code>: same as static property on Fortune class.</li><li><code>errors</code>: same as static property on Fortune class.</li><li><code>keys</code>: an object which enumerates reserved constants for record type definitions.</li><li><code>recordTypes</code>: an object which enumerates record types and their definitions.</li><li><code>options</code>: the options passed to the adapter.</li><li><code>Promise</code>: the Promise implementation.</li></ul><p>These keys are accessible on the instance (<code>this</code>).</p><h2 id="adapter-connect">Adapter.<span class="key">connect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-connect" class="anchor">#</a></h2><p>The responsibility of this method is to ensure that the record types defined are consistent with the backing data store. If there is any mismatch it should either try to reconcile differences or fail. This method <strong>SHOULD NOT</strong> be called manually, and it should not accept any parameters. This is the time to do setup tasks like create tables, ensure indexes, etc. On successful completion, it should resolve to no value.</p><h2 id="adapter-disconnect">Adapter.<span class="key">disconnect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-disconnect" class="anchor">#</a></h2><p>Close the database connection.</p><h2 id="adapter-create">Adapter.<span class="key">create</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">type</span>, <span class="parameter" title="Array of Objects">records</span>, <span class="parameter" title="Object">[meta]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-create" class="anchor">#</a></h2><p>Create records. A successful response resolves to the newly created records.</p><p><strong>IMPORTANT</strong>: the record must have initial values for each field defined in the record type. For non-array fields, it should be <code>null</code>, and for array fields it should be <code>[]</code> (empty array). Note that not all fields in the record type may be enumerable, such as denormalized inverse fields, so it may be necessary to iterate over fields using <code>Object.getOwnPropertyNames</code>.</p><h2 id="adapter-find">Adapter.<span class="key">find</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">type</span>, <span class="parameter" title="Either an array of Strings, or an array of Numbers">[ids]</span>, <span class="parameter" title="Object">[options]</span>, <span class="parameter" title="Object">[meta]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-find" class="anchor">#</a></h2><p>Find records by IDs and options. If IDs is undefined, it should try to return all records. However, if IDs is an empty array, it should be a no-op. The format of the options may be as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-tag">sort</span>: { ... },
+  <span class="hljs-tag">fields</span>: { ... },
+  <span class="hljs-tag">match</span>: { ... },
+
+  <span class="hljs-comment">// Limit results to this number. Zero means no limit.</span>
+  <span class="hljs-attribute">limit</span>: <span class="hljs-number">0</span>,
+
+  <span class="hljs-comment">// Offset results by this much from the beginning.</span>
+  <span class="hljs-attribute">offset</span>: <span class="hljs-number">0</span>
+}
+</code></pre><p>The syntax of the <code>sort</code> object is as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-attribute">age</span>: false, <span class="hljs-comment">// descending</span>
+  <span class="hljs-attribute">name</span>: true <span class="hljs-comment">// ascending</span>
+}
+</code></pre><p>Fields can be specified to be either included or omitted, but not both. Use the values <code>true</code> to include, or <code>false</code> to omit. The syntax of the <code>fields</code> object is as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-attribute">name</span>: true, <span class="hljs-comment">// include this field</span>
+  <span class="hljs-attribute">age</span>: true <span class="hljs-comment">// also include this field</span>
+}
+</code></pre><p>The syntax of the <code>match</code> object is straightforward:</p><pre><code class="lang-js">{
+  <span class="hljs-attribute">name</span>: <span class="hljs-string">'value'</span>, <span class="hljs-comment">// exact match or containment if array</span>
+  <span class="hljs-attribute">friends</span>: [ <span class="hljs-string">'joe'</span>, <span class="hljs-string">'bob'</span> ] <span class="hljs-comment">// match any one of these values</span>
+}
+</code></pre><p>The return value of the promise should be an array, and the array <strong>MUST</strong> have a <code>count</code> property that is the total number of records without limit and offset.</p><h2 id="adapter-update">Adapter.<span class="key">update</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">type</span>, <span class="parameter" title="Array of Objects">updates</span>, <span class="parameter" title="Object">[meta]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-update" class="anchor">#</a></h2><p>Update records by IDs. Success should resolve to the number of records updated. The <code>updates</code> parameter should be an array of objects that correspond to updates by IDs. Each update object must be as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// ID to update. Required.</span>
+<span class="hljs-label">  id:</span> <span class="hljs-number">1</span>,
+
+  <span class="hljs-comment">// Replace a value of a field. Use a `null` value to unset a field.</span>
+<span class="hljs-label">  replace:</span> { <span class="hljs-string">name:</span> <span class="hljs-string">'Bob'</span> },
+
+  <span class="hljs-comment">// Append values to an array field. If the value is an array, all of</span>
+  <span class="hljs-comment">// the values should be pushed.</span>
+<span class="hljs-label">  push:</span> { <span class="hljs-string">pets:</span> <span class="hljs-number">1</span> },
+
+  <span class="hljs-comment">// Remove values from an array field. If the value is an array, all of</span>
+  <span class="hljs-comment">// the values should be removed.</span>
+<span class="hljs-label">  pull:</span> { <span class="hljs-string">friends:</span> [ <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ] },
+
+  <span class="hljs-comment">// The `operate` object is specific to the adapter. This should take</span>
+  <span class="hljs-comment">// precedence over all of the above. Warning: using this may bypass</span>
+  <span class="hljs-comment">// field definitions and referential integrity. Use at your own risk.</span>
+<span class="hljs-label">  operate:</span> { ... }
+}
+</code></pre><p>Things to consider:</p><ul><li><code>push</code> and <code>pull</code> can not be applied to non-arrays.</li><li>The same value in the same field should not exist in both <code>push</code> and <code>pull</code>.</li></ul><h2 id="adapter-delete">Adapter.<span class="key">delete</span><!--
+        --><!--
+          -->(<span class="parameter" title="String">type</span>, <span class="parameter" title="Either an array of Strings, or an array of Numbers">[ids]</span>, <span class="parameter" title="Object">[meta]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-delete" class="anchor">#</a></h2><p>Delete records by IDs, or delete the entire collection if IDs are undefined or empty. Success should resolve to the number of records deleted.</p><h2 id="adapter-begintransaction">Adapter.<span class="key">beginTransaction</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-begintransaction" class="anchor">#</a></h2><p>Begin a transaction to write to the data store. This method is optional to implement, but useful for ACID. It should resolve to an object containing all of the adapter methods.</p><h2 id="adapter-endtransaction">Adapter.<span class="key">endTransaction</span><!--
+        --><!--
+          -->(<span class="parameter" title="Error. If an error is passed, roll back the transaction.">[error]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#adapter-endtransaction" class="anchor">#</a></h2><p>End a transaction. This method is optional to implement. It should return a Promise with no value if the transaction is completed successfully, or reject the promise if it failed.</p><h2 id="adapter-applyoperators">Adapter.<span class="key">applyOperators</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">record</span>, <span class="parameter" title="Object. The `operate` field on an `update` object.">operators</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Object</span><!--
+        --><!--
+      --><a href="#adapter-applyoperators" class="anchor">#</a></h2><p>Apply operators on a record, then return the record. If you make use of update operators, you should implement this method so that input transform functions get records in the correct state. This method is optional to implement.</p><hr><h6>Serializer <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/serializer&#x2F;index.js"><em>serializer&#x2F;index.js</em></a>)</span></h6><h2 id="serializer"><span class="class">class</span> Serializer<!--
+        --><!--
+        --><!--
+      --><a href="#serializer" class="anchor">#</a></h2><p>Serializer is an abstract base class containing methods to be implemented. Its methods can be categorized into three main categories: processing, showing (deserializing) or parsing (serializing). Generally, all of its methods should be implemented.</p><h2 id="serializer-constructor"><span class="class">new</span> Serializer<!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+      --><a href="#serializer-constructor" class="anchor">#</a></h2><p>The Serializer should not be instantiated directly, since the constructor function accepts dependencies. The keys which are injected are:</p><ul><li><code>methods</code>: same as static property on Fortune class.</li><li><code>errors</code>: same as static property on Fortune class.</li><li><code>keys</code>: an object which enumerates reserved constants for record type definitions.</li><li><code>recordTypes</code>: an object which enumerates record types and their definitions.</li><li><code>castValue</code>: a function with the signature (<code>value</code>, <code>type</code>, <code>options</code>), useful for casting arbitrary values to a particular type.</li><li><code>options</code>: the options passed to the serializer.</li><li><code>adapter</code>: a reference to the adapter instance.</li><li><code>Promise</code>: the Promise implementation.</li></ul><p>These keys are accessible on the instance (<code>this</code>).</p><h2 id="serializer-processrequest">Serializer.<span class="key">processRequest</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>, <span class="parameter" title="Arbitrary number of any type. At most two additional arguments.">[&hellip;args]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | Object</span><!--
+        --><!--
+      --><a href="#serializer-processrequest" class="anchor">#</a></h2><p>This gets run first. The purpose is typically to read and mutate the request before anything else happens. For example, it can handle URI routing and query string parsing. The arguments that it accepts beyond the required <code>context</code> are arbitrary.</p><p>It should return either the context or a promise that resolves to the context. It is optional to implement.</p><h2 id="serializer-processresponse">Serializer.<span class="key">processResponse</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>, <span class="parameter" title="Arbitrary number of any type. At most two additional arguments.">[&hellip;args]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | Object</span><!--
+        --><!--
+      --><a href="#serializer-processresponse" class="anchor">#</a></h2><p>This gets run last. The purpose is typically to read and mutate the response at the very end, for example, stringifying an object to be sent over the network. The arguments that it accepts beyond the required <code>context</code> may be arbitrary.</p><p>It should return either the context or a promise that resolves to the context. It is optional to implement.</p><h2 id="serializer-showresponse">Serializer.<span class="key">showResponse</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>, <span class="parameter" title="Array of Objects">[records]</span>, <span class="parameter" title="Object">[include]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | Object</span><!--
+        --><!--
+      --><a href="#serializer-showresponse" class="anchor">#</a></h2><p>Render the response. The parameter <code>records</code> is an array of records. The parameter <code>include</code> is a hash that must follow this format:</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// An object keyed by type, valued by arrays of records.</span>
+  <span class="hljs-attr_selector">[type]</span>: <span class="hljs-attr_selector">[ ... ]</span>
+}
+</code></pre><p>If <code>records</code> is missing, then it is assumed that the index route must be shown.</p><p>This method should return the <code>context</code> object, but mutate the <code>response</code>.</p><h2 id="serializer-showerror">Serializer.<span class="key">showError</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>, <span class="parameter" title="Object. should be an instance of Error">error</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | Object</span><!--
+        --><!--
+      --><a href="#serializer-showerror" class="anchor">#</a></h2><p>Show error(s). This method should return the <code>context</code> object, but mutate the <code>response</code>.</p><h2 id="serializer-parsecreate">Serializer.<span class="key">parseCreate</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | an array of Objects</span><!--
+        --><!--
+      --><a href="#serializer-parsecreate" class="anchor">#</a></h2><p>Parse a request payload for creating records. This method should return an array of records as expected by calling the <code>adapter.create</code> method. It may also mutate the context object.</p><h2 id="serializer-parseupdate">Serializer.<span class="key">parseUpdate</span><!--
+        --><!--
+          -->(<span class="parameter" title="Object">context</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise | an array of Objects</span><!--
+        --><!--
+      --><a href="#serializer-parseupdate" class="anchor">#</a></h2><p>Parse a request payload for updating records. This method should return an array of updates as expected by calling the <code>adapter.update</code> method. It may also mutate the context object.</p><h2 id="serializer-id"><span class="class">static</span> Serializer.<span class="key">id</span><!--
+        --><!--
+        --><!--
+      --><a href="#serializer-id" class="anchor">#</a></h2><p>A serializer must have a static property <code>id</code>. This should be informative and functional, such as a media type. <strong>MUST</strong> be a primitive type.</p><hr><h6>Net <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;http.js"><em>net&#x2F;http.js</em></a><a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;websocket.js"><em>net&#x2F;websocket.js</em></a>)</span></h6><h2 id="net-http">Net.<span class="key">http</span><!--
+        --><!--
+          -->(<span class="parameter" title="Fortune">instance</span>, <span class="parameter" title="Object">[options]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Function</span><!--
+        --><!--
+      --><a href="#net-http" class="anchor">#</a></h2><p>This function maps HTTP on to Fortune, it&#39;s a static method available at <code>Fortune.net.http</code>. The integration with Fortune is minimal, passing in which serializers to use, assigning request headers to the <code>meta</code> object, and reading the request body, and mapping the response from the <code>request</code> method on to the HTTP response. If the payload is an object, it will be cast into a JSON string. The listener function ends the response and returns a promise that is resolved when the response is ended. The returned promise may be rejected with the error response, providing a hook for error logging.</p><p>The options object may be formatted as follows:</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// By default, the listener will end the response, set this to `false` if</span>
+  <span class="hljs-comment">// the response will be ended later.</span>
+  <span class="hljs-tag">endResponse</span>: <span class="hljs-tag">true</span>,
+
+  <span class="hljs-comment">// Use compression if the request `Accept-Encoding` header allows it. Note</span>
+  <span class="hljs-comment">// that Buffer-typed responses will not be compressed. This option should</span>
+  <span class="hljs-comment">// be disabled in case of a reverse proxy which handles compression.</span>
+  <span class="hljs-tag">compression</span>: <span class="hljs-tag">true</span>,
+
+  <span class="hljs-comment">// JSON specific settings.</span>
+  <span class="hljs-tag">json</span>: {
+    <span class="hljs-comment">// How many spaces to indent. For example, use `2` for pretty printing.</span>
+    <span class="hljs-attribute">spaces</span>: <span class="hljs-number">0</span>,
+
+    <span class="hljs-comment">// Character encoding for buffers.</span>
+    <span class="hljs-attribute">bufferEncoding</span>: <span class="hljs-string">'base64'</span>
+  }
+}
+</code></pre><h2 id="net-websocket">Net.<span class="key">websocket</span><!--
+        --><!--
+          -->(<span class="parameter" title="Fortune">instance</span>, <span class="parameter" title="Object">options</span>, <span class="parameter" title="Function">[change]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">WebSocket.Server</span><!--
+        --><!--
+      --><a href="#net-websocket" class="anchor">#</a></h2><p>This function returns a WebSocket server, which internally uses the <code>ws</code> module. The options are the same as those listed <a href="https://einaros.github.io/ws/">here</a>.</p><p>The change handler function is called with two arguments: the socket instance for each connection, and the change event. It may return a Promise which resolves to the data to send over the wire.</p><hr></div></article><footer><p>&copy; 2015 &nbsp;&mdash;&nbsp; <a href="https://raw.githubusercontent.com/fortunejs/fortune/master/LICENSE">MIT License</a></p><p>福</p></footer></body></html>
