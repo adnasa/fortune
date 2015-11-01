@@ -27,7 +27,7 @@ module.exports = fortune.create()
   <span class="hljs-comment">// One-to-many relationship of post author to user posts.</span>
 <span class="hljs-label">  author:</span> { <span class="hljs-string">link:</span> <span class="hljs-string">'user'</span>, <span class="hljs-string">inverse:</span> <span class="hljs-string">'posts'</span> }
 })
-</code></pre><p>By default, the data is persisted in memory. There are adapters for databases such as <a href="https://github.com/fortunejs/fortune-mongodb">MongoDB</a>, <a href="https://github.com/fortunejs/fortune-postgres">Postgres</a>, and <a href="https://github.com/fortunejs/fortune-nedb">NeDB</a>.</p><p>Then lets add a HTTP server:</p><pre><code class="lang-js"><span class="hljs-comment">// server.js</span>
+</code></pre><p>By default, the data is persisted in memory. There are adapters for databases such as <a href="https://github.com/fortunejs/fortune-mongodb">MongoDB</a>, <a href="https://github.com/fortunejs/fortune-postgres">Postgres</a>, and <a href="https://github.com/fortunejs/fortune-nedb">NeDB</a>. Then let&#39;s add a HTTP server:</p><pre><code class="lang-js"><span class="hljs-comment">// server.js</span>
 const http = <span class="hljs-function"><span class="hljs-title">require</span><span class="hljs-params">(<span class="hljs-string">'http'</span>)</span></span>
 const fortune = <span class="hljs-function"><span class="hljs-title">require</span><span class="hljs-params">(<span class="hljs-string">'fortune'</span>)</span></span>
 const store = <span class="hljs-function"><span class="hljs-title">require</span><span class="hljs-params">(<span class="hljs-string">'./store'</span>)</span></span>
