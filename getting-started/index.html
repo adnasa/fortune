@@ -5,10 +5,9 @@ https://github.com/fortunejs/fortune/tree/master/website
 
 --><html lang="en"><head><title>Getting Started</title><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><link rel="icon" href="../assets/piggu.png"><link rel="stylesheet" href="../assets/index.css"></head><body><header><a href="https://github.com/fortunejs/fortune" id="corner"><span>Fork on</span> GitHub</a> <a href="../"><img src="../assets/piggu.svg" alt="Piggu" class="emblem"></a> <a href="../"><img src="../assets/fortune_type.svg" alt="Fortune.js" class="logo-type"></a><nav><a href="../getting-started/">Getting Started</a><!--
         --><a href="../api/">API Reference</a><!--
-        --><a href="../plugins/">Plugins</a></nav></header><article><h1>Getting Started</h1><p>The first thing you&#39;ll have to do is install <a href="https://nodejs.org/">Node.js</a> (if you&#39;re on Linux, install <code>nodejs</code> from your package manager). Optionally, you will need an ES6 transpiler such as <a href="http://babeljs.io">Babel</a> to run ES6 code:</p><pre><code class="lang-sh">$ npm <span class="hljs-operator"><span class="hljs-keyword">install</span> -<span class="hljs-keyword">g</span> babel</span>
-</code></pre><p><em>Note: if the above did not work, you probably don&#39;t have permissions, <a href="https://docs.npmjs.com/getting-started/fixing-npm-permissions">here are workarounds</a>.</em></p><p>Then install Fortune from the command-line:</p><pre><code class="lang-sh">$ npm <span class="hljs-keyword">install</span> fortune
-</code></pre><p>Then create an empty <code>index.js</code> file next to the <code>node_modules</code> folder, and start by importing Fortune and creating an instance:</p><pre><code class="lang-js"><span class="hljs-keyword">import</span> fortune <span class="hljs-keyword">from</span> <span class="hljs-string">'fortune'</span>
-<span class="hljs-keyword">const</span> store = fortune.create()
+        --><a href="../plugins/">Plugins</a></nav></header><article><h1>Getting Started</h1><p>The first thing you&#39;ll have to do is install <a href="https://nodejs.org/">Node.js</a> 4.2+ (if you&#39;re on Linux, install <code>nodejs</code> from your package manager). Then install Fortune from the command-line:</p><pre><code class="lang-sh">$ npm <span class="hljs-keyword">install</span> fortune
+</code></pre><p>Then create an empty <code>index.js</code> file next to the <code>node_modules</code> folder, and start by importing Fortune and creating an instance:</p><pre><code class="lang-js">const fortune = <span class="hljs-function"><span class="hljs-title">require</span><span class="hljs-params">(<span class="hljs-string">'fortune'</span>)</span></span>
+const store = fortune.<span class="hljs-function"><span class="hljs-title">create</span><span class="hljs-params">()</span></span>
 </code></pre><p>We don&#39;t need to pass any arguments to the constructor for now, the defaults should work.</p><h2 id="entity-relationship-modelling">Entity-relationship Modelling<a class="anchor" href="#entity-relationship-modelling" title="Link to this section “Entity-relationship Modelling”">#</a></h2><p>The instance must have record types to be useful. Let&#39;s start with a basic example:</p><pre><code class="lang-js">store.defineType(<span class="hljs-string">'user'</span>, {
 <span class="hljs-label">  username:</span> { <span class="hljs-string">type:</span> String },
 <span class="hljs-label">  key:</span> { <span class="hljs-string">type:</span> Buffer },
@@ -20,33 +19,40 @@ store.defineType(<span class="hljs-string">'group'</span>, {
 <span class="hljs-label">  name:</span> { <span class="hljs-string">type:</span> String },
 <span class="hljs-label">  users:</span> { <span class="hljs-string">link:</span> <span class="hljs-string">'user'</span>, <span class="hljs-string">inverse:</span> <span class="hljs-string">'group'</span>, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span> }
 })
-</code></pre><p>This defines a <code>user</code> record type that has a relationship to the <code>group</code> type. By default, relationships are to-one, unless <code>isArray</code> is specified. In this example, there is a many-to-many relationship between a user and a group. The <code>inverse</code> field specifies a corresponding field on the linked type, so that any update to either field will affect the other.</p><h2 id="transformation">Transformation<a class="anchor" href="#transformation" title="Link to this section “Transformation”">#</a></h2><p>Transformations can be defined per record type. Transform functions accept at least two arguments, the <code>context</code> object, the record, and optionally the <code>update</code> object for an <code>update</code> request. The method of an input transform may be any method except <code>find</code>, and an output transform may be applied to all methods.</p><p>Here are some implementation details for dealing with passwords:</p><pre><code class="lang-js"><span class="hljs-preprocessor"><span class="hljs-keyword">import</span> crypto from 'crypto'</span>
+</code></pre><p>This defines a <code>user</code> record type that has a relationship to the <code>group</code> type. By default, relationships are to-one, unless <code>isArray</code> is specified. In this example, there is a many-to-many relationship between a user and a group. The <code>inverse</code> field specifies a corresponding field on the linked type, so that any update to either field will affect the other.</p><h2 id="transformation">Transformation<a class="anchor" href="#transformation" title="Link to this section “Transformation”">#</a></h2><p>Transformations can be defined per record type. Transform functions accept at least two arguments, the <code>context</code> object, the record, and optionally the <code>update</code> object for an <code>update</code> request. The method of an input transform may be any method except <code>find</code>, and an output transform may be applied to all methods.</p><p>Here are some implementation details for dealing with passwords:</p><pre><code class="lang-js"><span class="hljs-keyword">const</span> crypto = require(<span class="hljs-string">'crypto'</span>)
 
-<span class="hljs-keyword">const</span> [ iterations, keyLength, saltLength ] =
-  [ Math.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>, <span class="hljs-number">15</span>), Math.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>, <span class="hljs-number">9</span>), Math.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>, <span class="hljs-number">6</span>) ]
+<span class="hljs-keyword">const</span> iterations = Math.pow(<span class="hljs-number">2</span>, <span class="hljs-number">15</span>)
+<span class="hljs-keyword">const</span> keyLength = Math.pow(<span class="hljs-number">2</span>, <span class="hljs-number">9</span>)
+<span class="hljs-keyword">const</span> saltLength = Math.pow(<span class="hljs-number">2</span>, <span class="hljs-number">6</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">passwordCheck</span> (</span>password, key, salt) {
+<span class="hljs-function">function <span class="hljs-title">passwordCheck</span> <span class="hljs-params">(password, key, salt)</span> </span>{
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Promise((resolve, reject) =&gt; crypto.pbkdf2(
-    password, salt, iterations, keyLength, (<span class="hljs-built_in">error</span>, buffer) =&gt;
-      <span class="hljs-built_in">error</span> ? reject(<span class="hljs-built_in">error</span>) : key.equals(buffer) ? resolve() : reject()))
+    password, salt, iterations, keyLength, (<span class="hljs-keyword">error</span>, buffer) =&gt;
+      <span class="hljs-keyword">error</span> ? reject(<span class="hljs-keyword">error</span>) : key.equals(buffer) ? resolve() : reject()))
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">generateSalt</span> (</span>) {
+function generateSalt () {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Promise((resolve, reject) =&gt;
-    crypto.randomBytes(saltLength, (<span class="hljs-built_in">error</span>, buffer) =&gt;
-    <span class="hljs-built_in">error</span> ? reject(<span class="hljs-built_in">error</span>) : resolve(buffer)))
+    crypto.randomBytes(saltLength, (<span class="hljs-keyword">error</span>, buffer) =&gt;
+    <span class="hljs-keyword">error</span> ? reject(<span class="hljs-keyword">error</span>) : resolve(buffer)))
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">generateKey</span> (</span>password, salt) {
+function generateKey (password, salt) {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Promise((resolve, reject) =&gt;
-    crypto.pbkdf2(password, salt, iterations, keyLength, (<span class="hljs-built_in">error</span>, buffer) =&gt;
-      <span class="hljs-built_in">error</span> ? reject(<span class="hljs-built_in">error</span>) : resolve(buffer)))
+    crypto.pbkdf2(password, salt, iterations, keyLength, (<span class="hljs-keyword">error</span>, buffer) =&gt;
+      <span class="hljs-keyword">error</span> ? reject(<span class="hljs-keyword">error</span>) : resolve(buffer)))
 }
-</code></pre><p>This is a pretty basic implementation using the <code>crypto</code> module provided by Node.js to check and generate passwords. For the user type, it would be a good idea to store the password as a cryptographically secure key, and to hide sensitive fields when displaying the record.</p><pre><code class="lang-js"><span class="hljs-keyword">const</span> { methods, errors } = fortune
+</code></pre><p>This is a pretty basic implementation using the <code>crypto</code> module provided by Node.js to check and generate passwords. For the user type, it would be a good idea to store the password as a cryptographically secure key, and to hide sensitive fields when displaying the record.</p><pre><code class="lang-js"><span class="hljs-keyword">const</span> methods = fortune.methods, errors = fortune.errors
 
 store.transformInput('user', (context, record, update) =&gt; {
-  <span class="hljs-keyword">const</span> { request: { <span class="hljs-keyword">method</span>, <span class="hljs-keyword">type</span>, meta } } = context
-  <span class="hljs-keyword">let</span> { key, salt, password } = record
+  <span class="hljs-keyword">const</span> request = context.request,
+    <span class="hljs-keyword">method</span> = request.<span class="hljs-keyword">method</span>,
+    <span class="hljs-keyword">type</span> = request.<span class="hljs-keyword">type</span>,
+    meta = request.meta
+
+  <span class="hljs-keyword">let</span> key = record.key,
+    salt = record.salt,
+    password = record.password
 
   <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === methods.create &amp;&amp; !password)
     throw new errors.<span class="hljs-type">BadRequestError</span>(`<span class="hljs-type">Password</span> must be specified.`)
