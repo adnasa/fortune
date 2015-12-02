@@ -67,22 +67,22 @@ https://github.com/fortunejs/fortune/tree/master/website
         --><!--
       --><a href="#fortune-definetype" class="anchor">#</a></h2><p>Define a record type given a name and a set of field definitions. The <code>fields</code> object only serves to enforce data types, and may be extended by the specific <code>Adapter</code> to express more, such as validations, uniqueness, indexing, etc. Here are some example field definitions:</p><pre><code class="lang-js">{
   <span class="hljs-comment">// A singular value.</span>
-<span class="hljs-label">  name:</span> { <span class="hljs-string">type:</span> String },
+<span class="hljs-symbol">  name:</span> { <span class="hljs-string">type:</span> String },
 
   <span class="hljs-comment">// An array containing values of a single type.</span>
-<span class="hljs-label">  luckyNumbers:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span> },
+<span class="hljs-symbol">  luckyNumbers:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span> },
 
   <span class="hljs-comment">// Creates a to-many link to `animal` record type. If the field `owner`</span>
   <span class="hljs-comment">// on the `animal` record type is not an array, this is a many-to-one</span>
   <span class="hljs-comment">// relationship, otherwise it is many-to-many.</span>
-<span class="hljs-label">  pets:</span> { <span class="hljs-string">link:</span> <span class="hljs-string">'animal'</span>, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">inverse:</span> <span class="hljs-string">'owner'</span> },
+<span class="hljs-symbol">  pets:</span> { <span class="hljs-string">link:</span> <span class="hljs-string">'animal'</span>, <span class="hljs-string">isArray:</span> <span class="hljs-literal">true</span>, <span class="hljs-string">inverse:</span> <span class="hljs-string">'owner'</span> },
 
   <span class="hljs-comment">// The `min` and `max` keys are open to interpretation by the specific</span>
   <span class="hljs-comment">// adapter or serializer, which may introspect the field definition.</span>
-<span class="hljs-label">  thing:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">min:</span> <span class="hljs-number">0</span>, <span class="hljs-string">max:</span> <span class="hljs-number">100</span> },
+<span class="hljs-symbol">  thing:</span> { <span class="hljs-string">type:</span> Number, <span class="hljs-string">min:</span> <span class="hljs-number">0</span>, <span class="hljs-string">max:</span> <span class="hljs-number">100</span> },
 
   <span class="hljs-comment">// Nested field definitions are invalid. Use `Object` type instead.</span>
-<span class="hljs-label">  nested:</span> { <span class="hljs-string">thing:</span> { ... } } <span class="hljs-comment">// Will throw an error.</span>
+<span class="hljs-symbol">  nested:</span> { <span class="hljs-string">thing:</span> { ... } } <span class="hljs-comment">// Will throw an error.</span>
 }
 </code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Symbol</code>, which may be used to represent custom types.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
         --><!--
@@ -101,9 +101,9 @@ https://github.com/fortunejs/fortune/tree/master/website
   <span class="hljs-keyword">method</span>: methods.find,
 
   <span class="hljs-keyword">type</span>: undefined, // <span class="hljs-type">Name</span> <span class="hljs-keyword">of</span> a <span class="hljs-keyword">type</span>. <span class="hljs-type">Optional</span>.
-  ids: undefined, // <span class="hljs-type">An</span> <span class="hljs-type">array</span> <span class="hljs-keyword">of</span> <span class="hljs-type">IDs</span>. <span class="hljs-type">Optional</span>.
+  ids: undefined, // <span class="hljs-type">An</span> <span class="hljs-built_in">array</span> <span class="hljs-keyword">of</span> <span class="hljs-type">IDs</span>. <span class="hljs-type">Optional</span>.
 
-  // A <span class="hljs-number">2</span>-dimensional <span class="hljs-type">array</span> specifying links to <span class="hljs-keyword">include</span>. <span class="hljs-type">The</span> first
+  // A <span class="hljs-number">2</span>-dimensional <span class="hljs-built_in">array</span> specifying links to <span class="hljs-keyword">include</span>. <span class="hljs-type">The</span> first
   // dimension <span class="hljs-keyword">is</span> a list, the second dimension <span class="hljs-keyword">is</span> depth. <span class="hljs-type">For</span> example:
   // [['comments'], ['comments', 'author']]
   <span class="hljs-keyword">include</span>: [],
@@ -126,7 +126,7 @@ https://github.com/fortunejs/fortune/tree/master/website
   payload: undefined // <span class="hljs-type">Payload</span> <span class="hljs-keyword">of</span> the request.
 }
 </code></pre><p>The response object looks much simpler:</p><pre><code class="lang-js">{
-  <span class="hljs-tag">meta</span>: { ... }, <span class="hljs-comment">// Meta-info of the response.</span>
+  <span class="hljs-selector-tag">meta</span>: { ... }, <span class="hljs-comment">// Meta-info of the response.</span>
   <span class="hljs-attribute">payload</span>: undefined <span class="hljs-comment">// Payload of the response.</span>
 }
 </code></pre><p>The resolved response object should always be typed.</p><h2 id="fortune-transform">Fortune.<span class="key">transform</span><!--
@@ -222,9 +222,9 @@ store.transform((context, record, update) =&gt; {
         --><span class="return">Promise</span><!--
         --><!--
       --><a href="#adapter-find" class="anchor">#</a></h2><p>Find records by IDs and options. If IDs is undefined, it should try to return all records. However, if IDs is an empty array, it should be a no-op. The format of the options may be as follows:</p><pre><code class="lang-js">{
-  <span class="hljs-tag">sort</span>: { ... },
-  <span class="hljs-tag">fields</span>: { ... },
-  <span class="hljs-tag">match</span>: { ... },
+  <span class="hljs-selector-tag">sort</span>: { ... },
+  <span class="hljs-selector-tag">fields</span>: { ... },
+  <span class="hljs-selector-tag">match</span>: { ... },
 
   <span class="hljs-comment">// Limit results to this number. Zero means no limit.</span>
   <span class="hljs-attribute">limit</span>: <span class="hljs-number">0</span>,
@@ -254,23 +254,23 @@ store.transform((context, record, update) =&gt; {
         --><!--
       --><a href="#adapter-update" class="anchor">#</a></h2><p>Update records by IDs. Success should resolve to the number of records updated. The <code>updates</code> parameter should be an array of objects that correspond to updates by IDs. Each update object must be as follows:</p><pre><code class="lang-js">{
   <span class="hljs-comment">// ID to update. Required.</span>
-<span class="hljs-label">  id:</span> <span class="hljs-number">1</span>,
+<span class="hljs-symbol">  id:</span> <span class="hljs-number">1</span>,
 
   <span class="hljs-comment">// Replace a value of a field. Use a `null` value to unset a field.</span>
-<span class="hljs-label">  replace:</span> { <span class="hljs-string">name:</span> <span class="hljs-string">'Bob'</span> },
+<span class="hljs-symbol">  replace:</span> { <span class="hljs-string">name:</span> <span class="hljs-string">'Bob'</span> },
 
   <span class="hljs-comment">// Append values to an array field. If the value is an array, all of</span>
   <span class="hljs-comment">// the values should be pushed.</span>
-<span class="hljs-label">  push:</span> { <span class="hljs-string">pets:</span> <span class="hljs-number">1</span> },
+<span class="hljs-symbol">  push:</span> { <span class="hljs-string">pets:</span> <span class="hljs-number">1</span> },
 
   <span class="hljs-comment">// Remove values from an array field. If the value is an array, all of</span>
   <span class="hljs-comment">// the values should be removed.</span>
-<span class="hljs-label">  pull:</span> { <span class="hljs-string">friends:</span> [ <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ] },
+<span class="hljs-symbol">  pull:</span> { <span class="hljs-string">friends:</span> [ <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ] },
 
   <span class="hljs-comment">// The `operate` object is specific to the adapter. This should take</span>
   <span class="hljs-comment">// precedence over all of the above. Warning: using this may bypass</span>
   <span class="hljs-comment">// field definitions and referential integrity. Use at your own risk.</span>
-<span class="hljs-label">  operate:</span> { ... }
+<span class="hljs-symbol">  operate:</span> { ... }
 }
 </code></pre><p>Things to consider:</p><ul><li><code>push</code> and <code>pull</code> can not be applied to non-arrays.</li><li>The same value in the same field should not exist in both <code>push</code> and <code>pull</code>.</li></ul><h2 id="adapter-delete">Adapter.<span class="key">delete</span><!--
         --><!--
@@ -338,7 +338,7 @@ store.transform((context, record, update) =&gt; {
         --><!--
       --><a href="#serializer-showresponse" class="anchor">#</a></h2><p>Render the response. The parameter <code>records</code> is an array of records. The parameter <code>include</code> is a hash that must follow this format:</p><pre><code class="lang-js">{
   <span class="hljs-comment">// An object keyed by type, valued by arrays of records.</span>
-  <span class="hljs-attr_selector">[type]</span>: <span class="hljs-attr_selector">[ ... ]</span>
+  <span class="hljs-selector-attr">[type]</span>: <span class="hljs-selector-attr">[ ... ]</span>
 }
 </code></pre><p>If <code>records</code> is missing, then it is assumed that the index route must be shown.</p><p>This method should return the <code>context</code> object, but mutate the <code>response</code>.</p><h2 id="serializer-showerror">Serializer.<span class="key">showError</span><!--
         --><!--
@@ -378,15 +378,15 @@ store.transform((context, record, update) =&gt; {
       --><a href="#net-http" class="anchor">#</a></h2><p>This function maps HTTP on to Fortune, it&#39;s a static method available at <code>Fortune.net.http</code>. The integration with Fortune is minimal, passing in which serializers to use, assigning request headers to the <code>meta</code> object, and reading the request body, and mapping the response from the <code>request</code> method on to the HTTP response. If the payload is an object, it will be cast into a JSON string. The listener function ends the response and returns a promise that is resolved when the response is ended. The returned promise may be rejected with the error response, providing a hook for error logging.</p><p>The options object may be formatted as follows:</p><pre><code class="lang-js">{
   <span class="hljs-comment">// By default, the listener will end the response, set this to `false` if</span>
   <span class="hljs-comment">// the response will be ended later.</span>
-  <span class="hljs-tag">endResponse</span>: <span class="hljs-tag">true</span>,
+  <span class="hljs-selector-tag">endResponse</span>: <span class="hljs-selector-tag">true</span>,
 
   <span class="hljs-comment">// Use compression if the request `Accept-Encoding` header allows it. Note</span>
   <span class="hljs-comment">// that Buffer-typed responses will not be compressed. This option should</span>
   <span class="hljs-comment">// be disabled in case of a reverse proxy which handles compression.</span>
-  <span class="hljs-tag">compression</span>: <span class="hljs-tag">true</span>,
+  <span class="hljs-selector-tag">compression</span>: <span class="hljs-selector-tag">true</span>,
 
   <span class="hljs-comment">// JSON specific settings.</span>
-  <span class="hljs-tag">json</span>: {
+  <span class="hljs-selector-tag">json</span>: {
     <span class="hljs-comment">// How many spaces to indent. For example, use `2` for pretty printing.</span>
     <span class="hljs-attribute">spaces</span>: <span class="hljs-number">0</span>,
 
