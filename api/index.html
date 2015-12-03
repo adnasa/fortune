@@ -84,7 +84,7 @@ https://github.com/fortunejs/fortune/tree/master/website
   <span class="hljs-comment">// Nested field definitions are invalid. Use `Object` type instead.</span>
 <span class="hljs-symbol">  nested:</span> { <span class="hljs-string">thing:</span> { ... } } <span class="hljs-comment">// Will throw an error.</span>
 }
-</code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Symbol</code>, which may be used to represent custom types.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
+</code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Function</code>, which may be used to define custom types.</p><p>A type function should accept one argument, the value, and return a boolean based on whether the value is valid for the type or not. It may optionally have properties <code>sort</code> and <code>equal</code>, which should be valued as functions.</p><ul><li><code>compare</code>: same signature as comparing with <code>Array.prototype.sort</code>.</li><li><code>equal</code>: return a boolean value if the two arguments are equal.</li></ul><p>These optional functions are used for the memory adapter and web browser adapters, but may not be run by other adapters.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
         --><!--
           -->(<span class="parameter" title="Object">options</span>, <span class="parameter" title="Arbitrary number of any type. At most two additional arguments.">[&hellip;args]</span>)<!--
         --><!--
@@ -93,11 +93,11 @@ https://github.com/fortunejs/fortune/tree/master/website
         --><span class="return">Promise</span><!--
         --><!--
       --><a href="#fortune-request" class="anchor">#</a></h2><p>This is the primary method for initiating a request. The options object must be formatted as follows:</p><pre><code class="lang-js">{
-  // <span class="hljs-type">The</span> <span class="hljs-keyword">method</span> <span class="hljs-keyword">is</span> a either a function <span class="hljs-keyword">or</span> a <span class="hljs-type">Symbol</span>, keyed under
-  // `methods` <span class="hljs-keyword">and</span> may be one <span class="hljs-keyword">of</span> `find`, `create`, `update`,  <span class="hljs-keyword">or</span> `delete`.
-  // <span class="hljs-type">To</span> implement a custom <span class="hljs-keyword">method</span>, pass a function that accepts one
-  // argument, the context. <span class="hljs-type">It</span> may <span class="hljs-keyword">return</span> the context synchronously <span class="hljs-keyword">or</span> <span class="hljs-keyword">as</span>
-  // a <span class="hljs-type">Promise</span>. <span class="hljs-type">Default</span>: `methods.find`.
+  // <span class="hljs-type">The</span> <span class="hljs-keyword">method</span> <span class="hljs-keyword">is</span> a either a function <span class="hljs-keyword">or</span> a constant, which <span class="hljs-keyword">is</span> keyed under
+  // `<span class="hljs-type">Fortune</span>.methods` <span class="hljs-keyword">and</span> may be one <span class="hljs-keyword">of</span> `find`, `create`, `update`,  <span class="hljs-keyword">or</span>
+  // `delete`. <span class="hljs-type">To</span> implement a custom <span class="hljs-keyword">method</span>, pass a function that accepts
+  // one argument, the context. <span class="hljs-type">It</span> may <span class="hljs-keyword">return</span> the context synchronously <span class="hljs-keyword">or</span>
+  // <span class="hljs-keyword">as</span> a <span class="hljs-type">Promise</span>. <span class="hljs-type">Default</span>: `methods.find`.
   <span class="hljs-keyword">method</span>: methods.find,
 
   <span class="hljs-keyword">type</span>: undefined, // <span class="hljs-type">Name</span> <span class="hljs-keyword">of</span> a <span class="hljs-keyword">type</span>. <span class="hljs-type">Optional</span>.
