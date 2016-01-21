@@ -224,6 +224,7 @@ store.transform((context, record, update) =&gt; {
       --><a href="#adapter-find" class="anchor">#</a></h2><p>Find records by IDs and options. If IDs is undefined, it should try to return all records. However, if IDs is an empty array, it should be a no-op. The format of the options may be as follows:</p><pre><code class="lang-js">{
   <span class="hljs-selector-tag">sort</span>: { ... },
   <span class="hljs-selector-tag">fields</span>: { ... },
+  <span class="hljs-selector-tag">exists</span>: { ... },
   <span class="hljs-selector-tag">match</span>: { ... },
   <span class="hljs-selector-tag">range</span>: { ... },
 
@@ -231,15 +232,22 @@ store.transform((context, record, update) =&gt; {
   <span class="hljs-attribute">limit</span>: <span class="hljs-number">0</span>,
 
   <span class="hljs-comment">// Offset results by this much from the beginning.</span>
-  <span class="hljs-attribute">offset</span>: <span class="hljs-number">0</span>
+  <span class="hljs-attribute">offset</span>: <span class="hljs-number">0</span>,
+
+  <span class="hljs-comment">// Reserved field for custom querying.</span>
+  <span class="hljs-attribute">query</span>: null
 }
-</code></pre><p>The syntax of the <code>sort</code> object is as follows:</p><pre><code class="lang-js">{
+</code></pre><p>For the fields <code>exists</code>, <code>match</code>, and <code>range</code>, the logical operator should be &quot;and&quot;. The <code>query</code> field may be used on a per adapter basis to provide custom querying functionality.</p><p>The syntax of the <code>sort</code> object is as follows:</p><pre><code class="lang-js">{
   <span class="hljs-attribute">age</span>: false, <span class="hljs-comment">// descending</span>
   <span class="hljs-attribute">name</span>: true <span class="hljs-comment">// ascending</span>
 }
 </code></pre><p>Fields can be specified to be either included or omitted, but not both. Use the values <code>true</code> to include, or <code>false</code> to omit. The syntax of the <code>fields</code> object is as follows:</p><pre><code class="lang-js">{
   <span class="hljs-attribute">name</span>: true, <span class="hljs-comment">// include this field</span>
   <span class="hljs-attribute">age</span>: true <span class="hljs-comment">// also include this field</span>
+}
+</code></pre><p>The <code>exists</code> object specifies if a field should exist or not (<code>true</code> or <code>false</code>). For array fields, it should check for non-zero length.</p><pre><code class="lang-js">{
+  name: true, //<span class="hljs-built_in"> check </span>if this fields exists
+  age: false //<span class="hljs-built_in"> check </span>if this field doesn't exist
 }
 </code></pre><p>The syntax of the <code>match</code> object is straightforward:</p><pre><code class="lang-js">{
   <span class="hljs-attribute">name</span>: <span class="hljs-string">'value'</span>, <span class="hljs-comment">// exact match or containment if array</span>
