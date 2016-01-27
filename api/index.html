@@ -5,67 +5,19 @@ https://github.com/fortunejs/fortune/tree/master/website
 
 --><html lang="en"><head><title>API Reference</title><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><link rel="icon" href="../assets/piggu.png"><link rel="stylesheet" href="../assets/index.css"></head><body><header><a href="https://github.com/fortunejs/fortune" id="corner"><span>Fork on</span> GitHub</a> <a href="../"><img src="../assets/piggu.svg" alt="Piggu" class="emblem"></a> <a href="../"><img src="../assets/fortune_type.svg" alt="Fortune.js" class="logo-type"></a><nav><a href="../getting-started/">Getting Started</a><!--
         --><a href="../api/">API Reference</a><!--
-        --><a href="../plugins/">Plugins</a></nav></header><article><div class="api"><h6>Fortune <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/core.js"><em>core.js</em></a>)</span></h6><h2 id="fortune"><span class="class">class</span> Fortune<!--
+        --><a href="../plugins/">Plugins</a><!--
+        --><a href="../changelog/">Changelog</a></nav></header><article><div class="api"><h6>Fortune <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/core.js"><em>core.js</em></a>)</span></h6><h2 id="fortune"><span class="class">class</span> Fortune<!--
         --><!--
         --><!--
-      --><a href="#fortune" class="anchor">#</a></h2><p>This is the default export of the <code>fortune</code> module. The Fortune class subclasses the built-in <code>EventEmitter</code> class, and it has a few static properties attached to it that may be useful to access:</p><ul><li><code>Adapter</code>: abstract base class for the Adapter.</li><li><code>adapters</code>: included adapters, defaults to memory adapter. Note that the browser build also includes <code>indexedDB</code> and <code>webStorage</code> adapters.</li><li><code>Serializer</code>: abstract base class for the Serializer.</li><li><code>serializers</code>: included serializers, defaulting to <em>ad hoc</em> HTTP. Server-side only.</li><li><code>net</code>: network protocol helpers, currently only HTTP is included. Server-side only.</li><li><code>errors</code>: custom typed errors, useful for throwing errors in transform functions.</li><li><code>methods</code>: a hash that maps to string constants. Available are: <code>find</code>, <code>create</code>, <code>update</code>, and <code>delete</code>.</li><li><code>change</code>: this is the name for the event that is emitted when a change is done. The callback function receives an object keyed by method names.</li><li><code>message</code>: a function which accepts the arguments (<code>id</code>, <code>language</code>, <code>data</code>). It has properties keyed by two-letter language codes, which by default includes only <code>en</code>.</li><li><code>Promise</code>: by default, the native Promise implementation is used. If an alternative is desired, simply assign this property with the new Promise class. This will affect all instances of Fortune.</li></ul><p>Note: in the browser version, <code>serializers</code> and <code>net</code> are omitted.</p><h2 id="fortune-constructor"><span class="class">new</span> Fortune<!--
+      --><a href="#fortune" class="anchor">#</a></h2><p>This is the default export of the <code>fortune</code> package. It implements a subset of <code>EventEmitter</code>, and it has a few static properties attached to it that may be useful to access:</p><ul><li><code>Adapter</code>: abstract base class for the Adapter.</li><li><code>adapters</code>: included adapters, defaults to memory adapter. Note that the browser build also includes <code>indexedDB</code> and <code>webStorage</code> adapters.</li><li><code>Serializer</code>: abstract base class for the Serializer.</li><li><code>serializers</code>: included serializers. Server-side only.</li><li><code>net</code>: network protocol helpers.</li><li><code>errors</code>: custom typed errors, useful for throwing errors in transform functions.</li><li><code>methods</code>: a hash that maps to string constants. Available are: <code>find</code>, <code>create</code>, <code>update</code>, and <code>delete</code>.</li><li><code>events</code>: names for events on the Fortune instance.</li><li><code>message</code>: a function which accepts the arguments (<code>id</code>, <code>language</code>, <code>data</code>). It has properties keyed by two-letter language codes, which by default includes only <code>en</code>.</li><li><code>Promise</code>: by default, the native Promise implementation is used. If an alternative is desired, simply assign this property with the new Promise class. This will affect all instances of Fortune.</li></ul><h2 id="fortune-constructor"><span class="class">new</span> Fortune<!--
         --><!--
-          -->(<span class="parameter" title="Object">[options]</span>)<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Fortune</span><!--
-        --><!--
-      --><a href="#fortune-constructor" class="anchor">#</a></h2><p>Create a new instance. The options object may be as follows:</p><pre><code class="lang-js">{
-  <span class="hljs-comment">// Adapter configuration. Default: `memoryAdapter`</span>
-  adapter: {
-    <span class="hljs-comment">// Must be a class that extends `Fortune.Adapter`, or a function</span>
-    <span class="hljs-comment">// that accepts the Adapter class and returns a subclass. Required.</span>
-    <span class="hljs-class"><span class="hljs-keyword">type</span>: <span class="hljs-title">Adapter</span> </span>=&gt; { ... },
-
-    <span class="hljs-comment">// An options object that is specific to the adapter. Optional.</span>
-    options: { ... }
-  },
-
-  <span class="hljs-comment">// Serializers ordered by priority. Default: ad hoc JSON-over-HTTP.</span>
-  serializers: [{
-    <span class="hljs-comment">// Must be a class that extends `Fortune.Serializer`, or a function</span>
-    <span class="hljs-comment">// that accepts the Serializer class and returns a subclass. Required.</span>
-    <span class="hljs-class"><span class="hljs-keyword">type</span>: <span class="hljs-title">Serializer</span> </span>=&gt; { ... },
-
-    <span class="hljs-comment">// An options object that is specific to the serializer. Optional.</span>
-    options: { ... }
-  }],
-
-  <span class="hljs-comment">// Whether or not to enforce referential integrity. Default: `true` for</span>
-  <span class="hljs-comment">// server, `false` for browser.</span>
-  enforceLinks: <span class="hljs-keyword">true</span>
-}
-</code></pre><h2 id="fortune-connect">Fortune.<span class="key">connect</span><!--
-        --><!--
-          -->()<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Promise</span><!--
-        --><!--
-      --><a href="#fortune-connect" class="anchor">#</a></h2><p>This method should be called when all setup is done. After this method succeeds, record types can not be defined. The resolved value is the instance of Fortune.</p><h2 id="fortune-disconnect">Fortune.<span class="key">disconnect</span><!--
-        --><!--
-          -->()<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Promise</span><!--
-        --><!--
-      --><a href="#fortune-disconnect" class="anchor">#</a></h2><p>Close adapter connection, and reset state. The resolved value is the instance of Fortune.</p><h2 id="fortune-definetype">Fortune.<span class="key">defineType</span><!--
-        --><!--
-          -->(<span class="parameter" title="String. Name of the record type.">name</span>, <span class="parameter" title="Object. A hash of field definition objects.">fields</span>)<!--
+          -->(<span class="parameter" title="Object">recordTypes</span>, <span class="parameter" title="Object">[options]</span>)<!--
         --><!--
         --><!--
         --><span class="arrow">⇒</span><!--
         --><span class="return">Fortune</span><!--
         --><!--
-      --><a href="#fortune-definetype" class="anchor">#</a></h2><p>Define a record type given a name and a set of field definitions. The <code>fields</code> object only serves to enforce data types, and may be extended by the specific <code>Adapter</code> to express more, such as validations, uniqueness, indexing, etc. Here are some example field definitions:</p><pre><code class="lang-js">{
+      --><a href="#fortune-constructor" class="anchor">#</a></h2><p>Create a new instance, the only required input is record type definitions. The first argument must be an object keyed by name, valued by definition objects. Here are some example field definitions:</p><pre><code class="lang-js">{
   <span class="hljs-comment">// A singular value.</span>
 <span class="hljs-symbol">  name:</span> { <span class="hljs-string">type:</span> String },
 
@@ -84,7 +36,63 @@ https://github.com/fortunejs/fortune/tree/master/website
   <span class="hljs-comment">// Nested field definitions are invalid. Use `Object` type instead.</span>
 <span class="hljs-symbol">  nested:</span> { <span class="hljs-string">thing:</span> { ... } } <span class="hljs-comment">// Will throw an error.</span>
 }
-</code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Function</code>, which may be used to define custom types.</p><p>A type function should accept one argument, the value, and return a boolean based on whether the value is valid for the type or not. It may optionally have properties <code>sort</code> and <code>equal</code>, which should be valued as functions.</p><ul><li><code>compare</code>: same signature as comparing with <code>Array.prototype.sort</code>.</li><li><code>equal</code>: return a boolean value if the two arguments are equal.</li></ul><p>These optional functions are used for the memory adapter and web browser adapters, but may not be run by other adapters.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
+</code></pre><p>The allowed native types are <code>String</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>, <code>Object</code>, and <code>Buffer</code>. Note that the <code>Object</code> type should be a JSON serializable object that may be persisted. The only other allowed type is a <code>Function</code>, which may be used to define custom types.</p><p>A type function should accept one argument, the value, and return a boolean based on whether the value is valid for the type or not. It may optionally have properties <code>sort</code> and <code>equal</code>, which should be valued as functions.</p><ul><li><code>compare</code>: same signature as comparing with <code>Array.prototype.sort</code>.</li><li><code>equal</code>: return a boolean value if the two arguments are equal.</li></ul><p>These optional functions are used for the memory adapter and web browser adapters, but may not be run by other adapters.</p><p>The options object may contain the following keys:</p><ul><li><p><code>adapter</code>: configuration object for the adapter. The default type is the memory adapter.</p><pre><code class="lang-js">{
+  <span class="hljs-comment">// Must be a class that extends `Fortune.Adapter`, or a function</span>
+  <span class="hljs-comment">// that accepts the Adapter class and returns a subclass. Required.</span>
+  <span class="hljs-keyword">type</span>: Adapter =&gt; { <span class="hljs-attr">...</span> },
+
+  <span class="hljs-comment">// An options object that is specific to the adapter. Optional.</span>
+  options: { <span class="hljs-attr">...</span> }
+}
+</code></pre></li><li><p><code>serializers</code>: an array of serializers ordered by priority. If none is specified, at least the default serializer will be used. On the server, this includes an ad hoc JSON over HTTP serializer by default.</p><pre><code class="lang-js"><span class="hljs-meta">[</span>{
+  <span class="hljs-comment">// Must be a class that extends `Fortune.Serializer`, or a function</span>
+  <span class="hljs-comment">// that accepts the Serializer class and returns a subclass. Required.</span>
+  <span class="hljs-keyword">type</span>: Serializer =&gt; { <span class="hljs-attr">...</span> },
+
+  <span class="hljs-comment">// An options object that is specific to the serializer. Optional.</span>
+  options: { <span class="hljs-attr">...</span> }
+}<span class="hljs-meta">]</span>
+</code></pre></li><li><p><code>transforms</code>: keyed by type name, valued by an object containing at least an <code>input</code> or <code>output</code> key, valued as a function.</p><p>A transform function takes at least two arguments, the internal <code>context</code> object and a single <code>record</code>. A special case is the <code>update</code> argument for the <code>update</code> method.</p><p>There are two kinds of transforms, before a record is written to transform input, and after it is read to transform output, both are optional. If an error occurs within an transform function, it will be forwarded to the response. Use typed errors to provide the appropriate feedback. It is varant to note that <code>output</code> transforms are run every time a record is shown in a response, so it should be idempotent.</p><p>For a create request, the input transform must return the second argument <code>record</code> either synchronously, or asynchronously as a Promise. The return value of a delete request is inconsequential, but it may return a value or a Promise. There is a special case of the <code>update</code> method accepting a <code>update</code> object as a third parameter, which must be returned synchronously or as a Promise.</p><p>An example transform to apply a timestamp on a record before creation, and displaying the timestamp in the server&#39;s locale:</p><pre><code class="lang-js">{
+  input (context, record, update) {
+    <span class="hljs-keyword">const</span> <span class="hljs-keyword">method</span> = context.request.<span class="hljs-keyword">method</span>
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === 'create') {
+      record.timestamp = new <span class="hljs-type">Date</span>()
+      <span class="hljs-keyword">return</span> record
+    }
+
+    <span class="hljs-keyword">if</span> (update) <span class="hljs-keyword">return</span> update
+
+    // <span class="hljs-type">If</span> we get here, <span class="hljs-keyword">return</span> value <span class="hljs-keyword">of</span> the delete <span class="hljs-keyword">method</span> doesn't matter.
+    <span class="hljs-keyword">return</span> null
+  },
+  output (context, record) {
+    record.timestamp = record.timestamp.toLocaleString()
+    <span class="hljs-keyword">return</span> record
+  }
+}
+</code></pre><p>Requests to update a record will <strong>NOT</strong> have the updates already applied to the record.</p><p>Another feature of the input transform is that it will have access to a temporary field <code>context.transaction</code>. This is useful for ensuring that bulk write operations are all or nothing. Each request is treated as a single transaction.</p></li><li><p><code>settings</code>: internal settings to configure.</p><pre><code class="lang-js">{
+  // Whether <span class="hljs-literal">or</span> <span class="hljs-literal">not</span> <span class="hljs-keyword">to</span> enforce referential integrity. <span class="hljs-keyword">Default</span>: `<span class="hljs-literal">true</span>` <span class="hljs-keyword">for</span>
+  // server, `<span class="hljs-literal">false</span>` <span class="hljs-keyword">for</span> browser.
+  enforceLinks: <span class="hljs-literal">true</span>
+}
+</code></pre></li></ul><p>The return value of the constructor is the instance itself.</p><h2 id="fortune-connect">Fortune.<span class="key">connect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#fortune-connect" class="anchor">#</a></h2><p>This method does not need to be called manually, it is automatically called upon the first request if it is not connected already. However, it may be useful if manually reconnect is needed. The resolved value is the instance itself.</p><h2 id="fortune-disconnect">Fortune.<span class="key">disconnect</span><!--
+        --><!--
+          -->()<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#fortune-disconnect" class="anchor">#</a></h2><p>Close adapter connection, and reset connection state. The resolved value is the instance itself.</p><h2 id="fortune-request">Fortune.<span class="key">request</span><!--
         --><!--
           -->(<span class="parameter" title="Object">options</span>, <span class="parameter" title="Arbitrary number of any type. At most two additional arguments.">[&hellip;args]</span>)<!--
         --><!--
@@ -92,96 +100,7 @@ https://github.com/fortunejs/fortune/tree/master/website
         --><span class="arrow">⇒</span><!--
         --><span class="return">Promise</span><!--
         --><!--
-      --><a href="#fortune-request" class="anchor">#</a></h2><p>This is the primary method for initiating a request. The options object must be formatted as follows:</p><pre><code class="lang-js">{
-  // <span class="hljs-type">The</span> <span class="hljs-keyword">method</span> <span class="hljs-keyword">is</span> a either a function <span class="hljs-keyword">or</span> a constant, which <span class="hljs-keyword">is</span> keyed under
-  // `<span class="hljs-type">Fortune</span>.methods` <span class="hljs-keyword">and</span> may be one <span class="hljs-keyword">of</span> `find`, `create`, `update`,  <span class="hljs-keyword">or</span>
-  // `delete`. <span class="hljs-type">To</span> implement a custom <span class="hljs-keyword">method</span>, pass a function that accepts
-  // one argument, the context. <span class="hljs-type">It</span> may <span class="hljs-keyword">return</span> the context synchronously <span class="hljs-keyword">or</span>
-  // <span class="hljs-keyword">as</span> a <span class="hljs-type">Promise</span>. <span class="hljs-type">Default</span>: `methods.find`.
-  <span class="hljs-keyword">method</span>: methods.find,
-
-  <span class="hljs-keyword">type</span>: undefined, // <span class="hljs-type">Name</span> <span class="hljs-keyword">of</span> a <span class="hljs-keyword">type</span>. <span class="hljs-type">Optional</span>.
-  ids: undefined, // <span class="hljs-type">An</span> <span class="hljs-built_in">array</span> <span class="hljs-keyword">of</span> <span class="hljs-type">IDs</span>. <span class="hljs-type">Optional</span>.
-
-  // A <span class="hljs-number">2</span>-dimensional <span class="hljs-built_in">array</span> specifying links to <span class="hljs-keyword">include</span>. <span class="hljs-type">The</span> first
-  // dimension <span class="hljs-keyword">is</span> a list, the second dimension <span class="hljs-keyword">is</span> depth. <span class="hljs-type">For</span> example:
-  // [['comments'], ['comments', 'author']]
-  <span class="hljs-keyword">include</span>: [],
-
-  // <span class="hljs-type">Exactly</span> the same <span class="hljs-keyword">as</span> the adapter's `find` <span class="hljs-keyword">method</span> options. <span class="hljs-type">The</span> options
-  // apply only to the primary <span class="hljs-keyword">type</span> on `find` requests.
-  options: { ... },
-
-  // <span class="hljs-type">Same</span> <span class="hljs-keyword">as</span> `options`, but <span class="hljs-keyword">is</span> an <span class="hljs-keyword">object</span> keyed by <span class="hljs-keyword">type</span>. <span class="hljs-type">This</span> <span class="hljs-keyword">is</span> only
-  // used <span class="hljs-keyword">in</span> conjunction <span class="hljs-keyword">with</span> the `<span class="hljs-keyword">include</span>` option.
-  includeOptions: { [<span class="hljs-keyword">type</span>]: { ... } },
-
-  // <span class="hljs-type">The</span> <span class="hljs-type">ID</span> <span class="hljs-keyword">of</span> the serializer to use <span class="hljs-keyword">for</span> the input (request). <span class="hljs-type">Optional</span>.
-  serializerInput: undefined,
-
-  // <span class="hljs-type">The</span> <span class="hljs-type">ID</span> <span class="hljs-keyword">of</span> the serializer to use <span class="hljs-keyword">for</span> the output (response). <span class="hljs-type">Optional</span>.
-  serializerOutput: undefined,
-
-  meta: { ... }, // <span class="hljs-type">Meta</span>-info <span class="hljs-keyword">of</span> the request.
-  payload: undefined // <span class="hljs-type">Payload</span> <span class="hljs-keyword">of</span> the request.
-}
-</code></pre><p>The response object looks much simpler:</p><pre><code class="lang-js">{
-  <span class="hljs-selector-tag">meta</span>: { ... }, <span class="hljs-comment">// Meta-info of the response.</span>
-  <span class="hljs-attribute">payload</span>: undefined <span class="hljs-comment">// Payload of the response.</span>
-}
-</code></pre><p>The resolved response object should always be typed.</p><h2 id="fortune-transform">Fortune.<span class="key">transform</span><!--
-        --><!--
-          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">[input]</span>, <span class="parameter" title="Function">[output]</span>)<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Fortune</span><!--
-        --><!--
-      --><a href="#fortune-transform" class="anchor">#</a></h2><p>Define a transformation per record type.</p><p>A transform function takes at least two arguments, the internal <code>context</code> object and a single <code>record</code>. A special case is the <code>update</code> argument for the <code>update</code> method.</p><p>There are two kinds of transforms, before a record is written to transform input, and after it is read to transform output, both are optional. If an error occurs within an transform function, it will be forwarded to the response. Use typed errors to provide the appropriate feedback. It is varant to note that <code>output</code> transforms are run every time a record is shown in a response, so it should be idempotent.</p><p>For a create request, the input transform must return the second argument <code>record</code> either synchronously, or asynchronously as a Promise. The return value of a delete request is inconsequential, but it may return a value or a Promise. There is a special case of the <code>update</code> method accepting a <code>update</code> object as a third parameter, which must be returned synchronously or as a Promise.</p><p>An example transform to apply a timestamp on a record before creation, and displaying the timestamp in the server&#39;s locale:</p><pre><code class="lang-js"><span class="hljs-keyword">const</span> { methods: {
-  create: createMethod, update: updateMethod
-} } = fortune
-
-store.transform((context, record, update) =&gt; {
-  <span class="hljs-keyword">const</span> { request: { <span class="hljs-keyword">method</span> } } = context
-
-  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === createMethod) {
-    record.timestamp = new <span class="hljs-type">Date</span>()
-    <span class="hljs-keyword">return</span> record
-  }
-
-  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">method</span> === updateMethod) <span class="hljs-keyword">return</span> update
-
-  // <span class="hljs-type">If</span> we get here, <span class="hljs-keyword">return</span> value <span class="hljs-keyword">of</span> the delete <span class="hljs-keyword">method</span> doesn't matter.
-  <span class="hljs-keyword">return</span> null
-}, (context, record) =&gt; {
-  record.timestamp = record.timestamp.toLocaleString()
-  <span class="hljs-keyword">return</span> record
-})
-</code></pre><p>Requests to update a record will <strong>NOT</strong> have the updates already applied to the record.</p><p>Another feature of the input transform is that it will have access to a temporary field <code>context.transaction</code>. This is useful for ensuring that bulk write operations are all or nothing. Each request is treated as a single transaction.</p><h2 id="fortune-transforminput">Fortune.<span class="key">transformInput</span><!--
-        --><!--
-          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">fn</span>)<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Fortune</span><!--
-        --><!--
-      --><a href="#fortune-transforminput" class="anchor">#</a></h2><p>Convenience method to define only the <code>input</code> argument of a transform.</p><h2 id="fortune-transformoutput">Fortune.<span class="key">transformOutput</span><!--
-        --><!--
-          -->(<span class="parameter" title="String">[type]</span>, <span class="parameter" title="Function">fn</span>)<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Fortune</span><!--
-        --><!--
-      --><a href="#fortune-transformoutput" class="anchor">#</a></h2><p>Convenience method to define only the <code>output</code> argument of a transform.</p><h2 id="fortune-create"><span class="class">static</span> Fortune.<span class="key">create</span><!--
-        --><!--
-          -->(<span class="parameter" title="Object">[options]</span>)<!--
-        --><!--
-        --><!--
-        --><span class="arrow">⇒</span><!--
-        --><span class="return">Fortune</span><!--
-        --><!--
-      --><a href="#fortune-create" class="anchor">#</a></h2><p>This is a static method on the Fortune class that is an alias for <code>new Fortune(options)</code>. This method will be deprecated in future versions.</p><hr><h6>Adapter <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/adapter&#x2F;index.js"><em>adapter&#x2F;index.js</em></a>)</span></h6><h2 id="adapter"><span class="class">class</span> Adapter<!--
+      --><a href="#fortune-request" class="anchor">#</a></h2><p>This is the primary method for initiating a request. The options object may contain the following keys:</p><ul><li><p><code>method</code>: The method is a either a function or a constant, which is keyed under <code>Fortune.methods</code> and may be one of <code>find</code>, <code>create</code>, <code>update</code>, or <code>delete</code>. To implement a custom method, pass a function that accepts one argument, the context. It may return the context synchronously or as a Promise. Default: <code>find</code>.</p></li><li><p><code>type</code>: Name of a type. Optional for <code>find</code> method only.</p></li><li><p><code>ids</code>: An array of IDs. Optional.</p></li><li><p><code>include</code>: A 2-dimensional array specifying links to include. The first dimension is a list, the second dimension is depth. For example: <code>[[&#39;comments&#39;], [&#39;comments&#39;, &#39;author&#39;]]</code>. Optional.</p></li><li><p><code>options</code>: Exactly the same as the adapter&#39;s <code>find</code> method options. The options apply only to the primary type on <code>find</code> requests. Optional.</p></li><li><p><code>includeOptions</code>: Same as <code>options</code>, but is an object keyed by type. This is only used in conjunction with the <code>include</code> option. For example: <code>{ [type]: { ... } }</code>. Optional.</p></li><li><p><code>serializerInput</code>: The ID of the serializer to use for parsing the payload of the request. Optional.</p></li><li><p><code>serializerOutput</code>: The ID of the serializer to use for the output of the response, including <code>processRequest</code> and <code>processResponse</code>. Optional.</p></li><li><p><code>meta</code>: Meta-information object of the request. Optional.</p></li><li><p><code>payload</code>: Payload of the request. Optional.</p></li></ul><p>The response object contains the following keys:</p><ul><li><code>meta</code>: Meta-info of the response.</li><li><code>payload</code>: Payload of the response.</li></ul><p>The resolved response object should always be an instance of a response type.</p><hr><h6>Adapter <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/adapter&#x2F;index.js"><em>adapter&#x2F;index.js</em></a>)</span></h6><h2 id="adapter"><span class="class">class</span> Adapter<!--
         --><!--
         --><!--
       --><a href="#adapter" class="anchor">#</a></h2><p>Adapter is an abstract base class containing methods to be implemented. All records returned by the adapter must have the primary key <code>id</code>. The primary key <strong>MUST</strong> be a string or a number.</p><h2 id="adapter-constructor"><span class="class">new</span> Adapter<!--
@@ -283,10 +202,10 @@ store.transform((context, record, update) =&gt; {
   <span class="hljs-comment">// the values should be removed.</span>
 <span class="hljs-symbol">  pull:</span> { <span class="hljs-string">friends:</span> [ <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ] },
 
-  <span class="hljs-comment">// The `operate` object is specific to the adapter. This should take</span>
+  <span class="hljs-comment">// The `operate` field is specific to the adapter. This should take</span>
   <span class="hljs-comment">// precedence over all of the above. Warning: using this may bypass</span>
   <span class="hljs-comment">// field definitions and referential integrity. Use at your own risk.</span>
-<span class="hljs-symbol">  operate:</span> { ... }
+<span class="hljs-symbol">  operate:</span> <span class="hljs-literal">null</span>
 }
 </code></pre><p>Things to consider:</p><ul><li><code>push</code> and <code>pull</code> can not be applied to non-arrays.</li><li>The same value in the same field should not exist in both <code>push</code> and <code>pull</code>.</li></ul><h2 id="adapter-delete">Adapter.<span class="key">delete</span><!--
         --><!--
@@ -383,7 +302,7 @@ store.transform((context, record, update) =&gt; {
       --><a href="#serializer-parseupdate" class="anchor">#</a></h2><p>Parse a request payload for updating records. This method should return an array of updates as expected by calling the <code>adapter.update</code> method. It may also mutate the context object.</p><h2 id="serializer-id"><span class="class">static</span> Serializer.<span class="key">id</span><!--
         --><!--
         --><!--
-      --><a href="#serializer-id" class="anchor">#</a></h2><p>A serializer must have a static property <code>id</code>. This should be informative and functional, such as a media type. <strong>MUST</strong> be a primitive type.</p><hr><h6>Net <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;http.js"><em>net&#x2F;http.js</em></a>)</span></h6><h2 id="net-http">Net.<span class="key">http</span><!--
+      --><a href="#serializer-id" class="anchor">#</a></h2><p>A serializer must have a static property <code>id</code>. This should be informative and functional, such as a media type. <strong>MUST</strong> be a primitive type.</p><hr><h6>Net <span>(<a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;http.js"><em>net&#x2F;http.js</em></a><a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;ws.js"><em>net&#x2F;ws.js</em></a><a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;request.js"><em>net&#x2F;request.js</em></a><a href="https://github.com/fortunejs/fortune/blob/master/lib/net&#x2F;sync.js"><em>net&#x2F;sync.js</em></a>)</span></h6><h2 id="net-http">Net.<span class="key">http</span><!--
         --><!--
           -->(<span class="parameter" title="Fortune">instance</span>, <span class="parameter" title="Object">[options]</span>)<!--
         --><!--
@@ -401,4 +320,49 @@ store.transform((context, record, update) =&gt; {
   <span class="hljs-comment">// be disabled in case of a reverse proxy which handles compression.</span>
   <span class="hljs-attribute">compression</span>: true
 }
-</code></pre><hr></div></article><footer><p>&copy; 2016 &nbsp;&mdash;&nbsp; <a href="https://raw.githubusercontent.com/fortunejs/fortune/master/LICENSE">MIT License</a></p><p>福</p></footer></body></html>
+</code></pre><h2 id="net-ws">Net.<span class="key">ws</span><!--
+        --><!--
+          -->(<span class="parameter" title="Fortune">instance</span>, <span class="parameter" title="Function">[change]</span>, <span class="parameter" title="Object">[options]</span>, <span class="parameter" title="Function">[callback]</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Server</span><!--
+        --><!--
+      --><a href="#net-ws" class="anchor">#</a></h2><p>This function returns a WebSocket server that implements the Fortune wire protocol. The options are the same as those documented in the <a href="https://github.com/websockets/ws/blob/master/doc/ws.md"><code>ws</code> documentation</a>.</p><p>The wire protocol is based on <a href="http://msgpack.org">MessagePack</a>. The client may send two kinds of requests: setting state within the connection, and making a request to the Fortune instance. Each client request <strong>MUST</strong> include an ID for correlating a response to a request. For example, requesting a state change would look like:</p><pre><code class="lang-js">{ id: 'xxx', <span class="hljs-keyword">state</span>: { ... } } // MessagePack encoded.
+</code></pre><p>The format is identical in the response for a state change.</p><p>Making a request to the instance is similar, and has the same parameters as the <a href="#fortune-request"><code>request</code> method</a>:</p><pre><code class="lang-js">{ <span class="hljs-string">id:</span> <span class="hljs-string">'xxx'</span>, <span class="hljs-string">request:</span> { ... } } <span class="hljs-comment">// MessagePack encoded.</span>
+</code></pre><p>When a request succeeds, the client receives the response like so:</p><pre><code class="lang-js">{ <span class="hljs-string">id:</span> <span class="hljs-string">'xxx'</span>, <span class="hljs-string">response:</span> { ... } } <span class="hljs-comment">// MessagePack encoded.</span>
+</code></pre><p>The <code>change</code> callback function gets invoked either when a change occurs within the Fortune instance, or when the client requests a state change. If it&#39;s an internal change, it is invoked with the current state and changes, otherwise if it&#39;s a connection state change, it does not have a second argument. For an internal change, the return value of this function determines either what gets sent to the client, which may be falsy to send nothing. For connection state change, the return value should be what gets assigned over the current state. It may also return a Promise. For example:</p><pre><code class="lang-js">function change (<span class="hljs-keyword">state</span>, changes) {
+  return new Promise((resolve, reject) =&gt; {
+    if (!changes) {
+      // Accept only changes <span class="hljs-keyword">to</span> the `isListening` key.
+      return resolve({ isListening: Boolean(<span class="hljs-keyword">state</span>.isListening) })
+    }
+    // Determine what changes should be relayed <span class="hljs-keyword">to</span> the client,
+    // based <span class="hljs-keyword">on</span> the current <span class="hljs-keyword">state</span>.
+    return resolve(<span class="hljs-keyword">state</span>.isListening ? changes : null)
+  })
+}
+</code></pre><p>The changes are relayed to the client like so:</p><pre><code class="lang-js">{ <span class="hljs-selector-tag">changes</span>: { ... } } <span class="hljs-comment">// MessagePack encoded.</span>
+</code></pre><p>If any request fails, the client receives a message like so:</p><pre><code class="lang-js">{ <span class="hljs-attribute">id</span>: <span class="hljs-string">'xxx'</span>, <span class="hljs-attribute">error</span>: <span class="hljs-string">'...'</span> } <span class="hljs-comment">// MessagePack encoded.</span>
+</code></pre><p>The returned <code>Server</code> object has an additional key <code>stateMap</code>, which is a <code>WeakMap</code> keyed by WebSocket connection, and valued by connection state. This may be useful for external connection handlers.</p><h2 id="net-request">Net.<span class="key">request</span><!--
+        --><!--
+          -->(<span class="parameter" title="WebSocket">client</span>, <span class="parameter" title="Object">data</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Promise</span><!--
+        --><!--
+      --><a href="#net-request" class="anchor">#</a></h2><p>Given a WebSocket client, send a request using the Fortune wire protocol, and get a response back as a Promise. This will not create a client, it needs to be created externally. For example:</p><pre><code class="lang-js"><span class="hljs-comment">// https://developer.mozilla.org/en-US/docs/Web/API/WebSocket</span>
+<span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> WebSocket(url, protocols)
+client.addEventListener(<span class="hljs-string">'open'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  fortune.net.request(client, { ... })
+})
+</code></pre><p>The <code>data</code> object may contain the keys <code>id</code> (if it is not provided, it will be generated), and either <code>state</code> or <code>request</code>.</p><h2 id="net-sync">Net.<span class="key">sync</span><!--
+        --><!--
+          -->(<span class="parameter" title="WebSocket">client</span>, <span class="parameter" title="Fortune">instance</span>)<!--
+        --><!--
+        --><!--
+        --><span class="arrow">⇒</span><!--
+        --><span class="return">Function</span><!--
+        --><!--
+      --><a href="#net-sync" class="anchor">#</a></h2><p>Given a WebSocket client and an instance of Fortune, try to synchronize records based on the <code>changes</code> data pushed from the server. This function returns the event listener function.</p><p>When a sync is completed, it emits the <code>sync</code> event with the changes data, or the <code>failure</code> event if something failed.</p><hr></div></article><footer><p>&copy; 2016 &nbsp;&mdash;&nbsp; <a href="https://raw.githubusercontent.com/fortunejs/fortune/master/LICENSE">MIT License</a></p><p>福</p></footer></body></html>
